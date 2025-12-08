@@ -45,6 +45,40 @@ class Database
 
         return $result->fetch_all(MYSQLI_ASSOC);
     }
+    function insert($table, $data) {
+        $columns = implode(",", array_keys($data));
+        $values  = "'" . implode("','", array_values($data)) . "'";
+        $sql = "INSERT INTO $table ($columns) VALUES ($values)";
+        return $this->mysqli->query($sql);
+    }
+
+    function update($table, $data, $where) {
+        $set = "";
+        foreach ($data as $key => $value) {
+            $set .= "$key='$value',";
+        }
+        $set = rtrim($set, ',');
+
+        $condition = "";
+        foreach ($where as $key => $value) {
+            $condition .= "$key='$value' AND ";
+        }
+        $condition = rtrim($condition, " AND ");
+
+        $sql = "UPDATE $table SET $set WHERE $condition";
+        return $this->mysqli->query($sql);
+    }
+
+    function delete($table, $where) {
+        $condition = "";
+        foreach ($where as $key => $value) {
+            $condition .= "$key='$value' AND ";
+        }
+        $condition = rtrim($condition, " AND ");
+
+        $sql = "DELETE FROM $table WHERE $condition";
+        return $this->mysqli->query($sql);
+    }
 
     function __destruct()
     {
